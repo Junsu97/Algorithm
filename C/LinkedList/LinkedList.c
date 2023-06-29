@@ -1,85 +1,114 @@
 #include "LinkedList.h"
 
 // 노드생성
-Node* SLL_CreateNode(ElementType NewData){
-    Node* NewNode = (Node*)malloc(sizeof(Node));
+Node* SLL_CreateNode(ElementType newData){
+    Node* newNode = (Node*)malloc(sizeof(Node));
 
-    NewNode->Data = NewData; // 데이터 저장
-    NewNode->NextNode = NULL; // 다음 노드에 대한 포인터는Null로 초기화
+    newNode->data = newData; // 데이터 저장
+    newNode->nextData = NULL; // 다음 노드에 대한 포인터는Null로 초기화
 
-    return NewNode; // 노드 주소 반환
+    return newNode; // 노드 주소 반환
 }
 
 // 노드 소멸
-void SLL_DestroyNode(Node* Node){
-    free(Node);
+void SLL_DestroyNode(Node* node){
+    free(node);
+}
+
+void SLL_DestroyAllNodes(Node** list){
+    int i;
+    int count;
+    Node* current = NULL;
+
+    count = SLL_GetNodeCount((*list));
+    for( i = 0; i< count; i++){
+        current = SLL_GetNodeAt((*list),0);
+        if(current != NULL){
+            printf("Destorying %d\n",current->data);
+            SLL_RemoveNode(list,current);
+            SLL_DestroyNode(current);
+        }
+    }
 }
 
 // 노드추가
-void SLL_AppendNode(Node** Head, Node* NewNode){
-    // 헤드 노드가 NULL이라면 새로운 노드가 Head
-    if ( (*Head) == NULL){
-        *Head = NewNode;
+void SLL_AppendNode(Node** head, Node* newNode){
+    // 헤드 노드가 NULL이라면 새로운 노드가 head
+    if ( (*head) == NULL){
+        *head = newNode;
     }else{
         // 테일을 찾아 NewNode 연결
-        Node* Tail = (*Head);
-        while (Tail -> NextNode != NULL)
+        Node* tail = (*head);
+        while (tail -> nextData != NULL)
         {
-            Tail = Tail -> NextNode;
+            tail = tail -> nextData;
         }
-        
+        tail->nextData=newNode;
     }
 }
 
 // 노드 삽입
-void SLL_InsertAfter(Node* Current, Node* NewNode){
-    NewNode->NextNode = Current->NextNode;
-    Current->NextNode = NewNode;
+void SLL_InsertAfter(Node* current, Node* newNode){
+    newNode->nextData = current->nextData;
+    current->nextData = newNode;
 }
 
-void SLL_InsertNewHead(Node** Head, Node* NewHead){
-    if(*Head == NULL){
-        (*Head) = NewHead;
+void SLL_InsertNewHead(Node** head, Node* newHead){
+    if(*head == NULL){
+        (*head) = newHead;
     }else{
-        NewHead->NextNode = (*Head);
-        (*Head) = NewHead;
+        newHead->nextData = (*head);
+        (*head) = newHead;
     }
 }
+
+void SLL_InsertBefore(Node** head, Node* current, Node *newHead){
+    if((*head)==current){
+        SLL_InsertNewHead(head,newHead);
+    }else{
+        Node* before = (*head);
+        while(before->nextData != current){
+            before = before ->nextData;
+        }
+        SLL_InsertAfter(before,newHead);
+    }
+}
+
 
 // 노드제거
-void SLL_RemoveNode(Node** Head, Node* Remove){
-    if( *Head == Remove){
-        *Head = Remove -> NextNode;
+void SLL_RemoveNode(Node** head, Node* remove){
+    if( *head == remove){
+        *head = remove -> nextData;
     }else{
-        Node* Current = *Head;
-        while (Current != NULL && Current->NextNode != Remove){
-            Current = Current->NextNode;
+        Node* current = *head;
+        while (current != NULL && current->nextData != remove){
+            current = current->nextData;
         }
-        if( Current != NULL){
-            Current->NextNode =Remove->NextNode;
+        if( current != NULL){
+            current->nextData =remove->nextData;
         }
     }
 }
 
-Node* SLL_GetNodeAt(Node* Head, int Location){
-    Node* Current = Head;
+Node* SLL_GetNodeAt(Node* head, int location){
+    Node* current = head;
 
-    while (Current != NULL && (--Location) >= 0)
+    while (current != NULL && (--location) >= 0)
     {
-        Current = Current->NextNode;
+        current = current->nextData;
     }
-    return Current;
+    return current;
 }
 
 // 노드 수 세기
-int SLL_GetNodeCount(Node* Head){
-    int Count = 0;
-    Node* Current = Head;
+int SLL_GetNodeCount(Node* head){
+    int count = 0;
+    Node* current = head;
 
-    while (Current != NULL)
+    while (current != NULL)
     {
-        Current = Current->NextNode;
-        Count++;
+        current = current->nextData;
+        count++;
     }
-    return Count;
+    return count;
 }
